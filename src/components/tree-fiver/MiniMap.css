@@ -1,0 +1,17 @@
+.minimap{
+    --w:.2em;
+    --g:.2em;
+    --wg:calc(var(--w) + var(--g));
+    --scaleY: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: var(--g);
+}
+.minimap .line{
+    /*left: `${i * wg}em`,*/
+    width: var(--w);
+    height: 3em;
+    background-color: white;
+    transform: scaleY(var(--scaleY));
+}

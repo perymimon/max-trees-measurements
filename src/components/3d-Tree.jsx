@@ -1,12 +1,39 @@
 import React, {useRef} from "react";
-import {useGLTF, Text} from "@react-three/drei";
+import {useGLTF, Text, shaderMaterial} from "@react-three/drei";
 import {domain2range, findMinMax2D} from "../helper/math";
-// import THREE from "three";
+import {Color} from "three";
+
+import basicVertex from "/src/shaders/basicVertex.glsl?raw";
+import foliageFragment from "/src/shaders/basicVertex.glsl?raw";
+
 
 let modelURL = new URL('../../3d-models/treeModel.glb', import.meta.url);
 
+// const foliageMaterial = new ShaderMaterial({
+//     vertexShader: basicVertex,
+//     fragmentShader: foliageFragment,
+//     // wireframe:true,
+//     transparent: true,
+//     uniforms: {
+//         uTime:{value:0},
+//         uColorTop:{value:new Color('orange')},
+//         uColorBottom:{value:new Color('green')},
+//     }
+// })
+// debugger;
+
+const FoliageMaterial = shaderMaterial(
+    {
+        uColorTop: new Color(0.2, 0.0, 0.1),
+        uColorBottom: new Color(0.2, 0.0, 0.1)
+    },
+    // vertex shader
+    basicVertex,
+    foliageFragment
+)
+
 export function Trees(props) {
-    const {tops,bottoms, watered} = props;
+    const {tops, bottoms, watered} = props;
     const treeModel = useGLTF(modelURL.href);
     const topmm = findMinMax2D(tops);
     const bottomsmm = findMinMax2D(bottoms);
@@ -22,21 +49,19 @@ export function Trees(props) {
             let bottomDensity = bottoms[z][x]
             let water = watered[z][x]
 
-            console.log(water, treeHeightScale(water));
-
             return <Tree key={key} treeModel={treeModel}
                          position={[tx, -3, tz]}
                          topDensity={topDensity}
                          bottomDensity={bottomDensity}
                          water={water}
                          heightScale={treeHeightScale(water)}
-                         />
+            />
         })
     })
 }
 
 export default function Tree(props) {
-    const {treeModel, heightScale = 1, topDensity,bottomDensity,water } = props;
+    const {treeModel, heightScale = 1, topDensity, bottomDensity, water} = props;
     const {nodes, materials} = treeModel;
     const group = useRef();
 
@@ -46,18 +71,18 @@ export default function Tree(props) {
 
     return (
         <group ref={group} {...props} dispose={null}>
-            <group
-                position={[0, 2, 0]}
-                rotation-x={-.9}
-            >
-                {/*<mesh name="Tree" scale={.5}>*/}
-                {/*    <planeGeometry args={[1, 1]}/>*/}
-                {/*    <meshBasicMaterial color={densityColor} transparent/>*/}
-                {/*</mesh>*/}
-                {/*<Text color="black" anchorX="center" anchorY="middle" position={[0, 0, 0.1]}>*/}
-                {/*    {density}*/}
-                {/*</Text>*/}
-            </group>
+            {/*<group*/}
+            {/*    position={[0, 2, 0]}*/}
+            {/*    rotation-x={-.9}*/}
+            {/*>*/}
+            {/*    /!*<mesh name="Tree" scale={.5}>*!/*/}
+            {/*    /!*    <planeGeometry args={[1, 1]}/>*!/*/}
+            {/*    /!*    <meshBasicMaterial color={densityColor} transparent/>*!/*/}
+            {/*    /!*</mesh>*!/*/}
+            {/*    /!*<Text color="black" anchorX="center" anchorY="middle" position={[0, 0, 0.1]}>*!/*/}
+            {/*    /!*    {density}*!/*/}
+            {/*    /!*</Text>*!/*/}
+            {/*</group>*/}
             <mesh name="breed" castShadow
                   geometry={nodes.Circle025.geometry}
                   material={materials.Wood}
@@ -66,9 +91,10 @@ export default function Tree(props) {
             />
             <mesh name="foliage" castShadow
                   geometry={nodes.Roundcube028.geometry}
-                  position={[0, heightScale* 0.85, 0]}
+                  position={[0, heightScale * 0.85, 0]}
             >
-                <meshBasicMaterial color={densityColor} fog={true}/>
+                <FoliageMaterial attach="material" color="hotpink" time={1}/>
+                {/*<meshBasicMaterial color={densityColor} fog={true}/>*/}
                 {/*<meshBasicMaterial toneMapped={false} fog={false} />*/}
                 <mesh
                     geometry={leafGeometry}

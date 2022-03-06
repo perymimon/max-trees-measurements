@@ -1,6 +1,6 @@
 .minimap{
-    --w:.2em;
-    --g:.2em;
+    --w:4rem;
+    --g:.4rem;
     --wg:calc(var(--w) + var(--g));
     --scaleY: 1;
 
@@ -8,10 +8,19 @@
     flex-direction: row;
     gap: var(--g);
 }
-.minimap .line{
-    /*left: `${i * wg}em`,*/
-    width: var(--w);
-    height: 3em;
-    background-color: white;
-    transform: scaleY(var(--scaleY));
+.minimap .line:after{
+    content: "🌞";
+    font-size: var(--w);
 }
+.minimap .line {
+    font-size: .7em;
+    transform: scale(var(--scaleY));
+}
+
+/*}.minimap .line{*/
+/*    !*left: `${i * wg}em`,*!*/
+/*    width: var(--w);*/
+/*    height: 3em;*/
+/*    background-color: white;*/
+/*    transform: scaleY(var(--scaleY));*/
+/*}*/

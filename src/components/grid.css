@@ -1,0 +1,27 @@
+.grid{
+    flex:1;
+    overflow-y:auto;
+
+    display: grid;
+    --grid-columns: 12;
+    --grid-rows: 12;
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    grid-template-rows: repeat(var(--grid-rows), 4em);
+    font-size: 0.85em;
+    font-family: monospace;
+    gap: 0.5em;
+}
+.grid > *{
+    grid-column: span 1;
+    grid-row: span 1;
+    color: #fff;
+    text-align: left;
+
+}
+
+.grid > *:is(*:hover, *.marked) {
+    background-color: #fff;
+    color: gray;
+    font-weight: bold;
+    transform: scale(1.2);
+}

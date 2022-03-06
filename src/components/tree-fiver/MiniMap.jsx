@@ -1,14 +1,14 @@
-import * as THREE from 'three'
 import {useRef} from 'react'
 import {useFrame} from '@react-three/fiber'
 import {useScroll,  Html} from '@react-three/drei'
 
 import './MiniMap.css'
 
+let pageIndex = -1;
+
 export function Minimap({items, onPageChange = null}) {
     const ref = useRef()
     const scroll = useScroll()
-    let pageIndex = -1;
     // console.log('scroll', scroll);
 
     useFrame((state, delta) => {
@@ -37,9 +37,11 @@ export function Minimap({items, onPageChange = null}) {
     return (
         <Html ref={ref}
               className="minimap"
-              calculatePosition={(el, camera, size)=>[size.width/2,size.height - 150]} >
-            {items.map((_, i) => {
-                return <div key={i} data-index={i} className="line" ></div>
+              calculatePosition={(el, camera, size)=>[size.width/2, 50]} >
+            {items.map((dayText, i) => {
+                return <div key={i} data-index={i} className="line" >
+                    {dayText}
+                </div>
             })}
 
         </Html>

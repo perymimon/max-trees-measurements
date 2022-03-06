@@ -1,101 +1,118 @@
+let modelURL = new URL('/3d-models/treeModel.glb', import.meta.url);
+
 import React, {useRef} from "react";
 import {useGLTF, Text, shaderMaterial} from "@react-three/drei";
-import {domain2range, findMinMax2D} from "../helper/math";
-import {Color} from "three";
+import {domain2range} from "/src/helper/math";
+import {Color, BoxGeometry, MeshStandardMaterial, MeshBasicMaterial} from "three";
+import LetMap from "/src/helper/let-map";
 
 import basicVertex from "/src/shaders/basicVertex.glsl?raw";
-import foliageFragment from "/src/shaders/basicVertex.glsl?raw";
+import foliageFragment from "/src/shaders/foliageFragment.glsl?raw";
+import {extend} from "@react-three/fiber";
 
-
-let modelURL = new URL('../../3d-models/treeModel.glb', import.meta.url);
-
-// const foliageMaterial = new ShaderMaterial({
-//     vertexShader: basicVertex,
-//     fragmentShader: foliageFragment,
-//     // wireframe:true,
-//     transparent: true,
-//     uniforms: {
-//         uTime:{value:0},
-//         uColorTop:{value:new Color('orange')},
-//         uColorBottom:{value:new Color('green')},
-//     }
-// })
-// debugger;
-
-const FoliageMaterial = shaderMaterial(
-    {
-        uColorTop: new Color(0.2, 0.0, 0.1),
-        uColorBottom: new Color(0.2, 0.0, 0.1)
-    },
+const ColorShiftMaterial = shaderMaterial(
+    {time: 0, topColor: [1.0, 0.0, 0.0], bottomColor: [0.0, 0.0, 1.0]},
     // vertex shader
     basicVertex,
+    // fragment shader
     foliageFragment
 )
+extend({ColorShiftMaterial})
+
+const normalDensity = domain2range([0, 500], [0.2, 1]);
+const normalWater = domain2range([0, 5], [0.2, 1]);
+const treeHeightScale = domain2range([0, 4], [0.5, 2]);
+
+const foliageColor = (density) => {
+    const color = new Color();
+    color.setHSL(0.22, normalDensity(density), 0.5);
+    return color;
+}
+const waterColor = (density) => {
+    const color = new Color();
+    color.setHSL(225 / 360, normalWater(density), 0.5);
+    return color;
+}
+
+const waterGeometry = new BoxGeometry(1, 1, 1)
+const waterMaterials = new LetMap(index => {
+    return new MeshStandardMaterial({color: waterColor(index)})
+})
+
+const markerGeometry = new BoxGeometry(1, 4, 1)
+const markerMaterials = new MeshBasicMaterial({
+    color: 'white',
+    transparent: true,
+    opacity: 0.8,
+})
+
+const foliageMaterials = new LetMap(([topDensity, bottomDensity]) => {
+    return <colorShiftMaterial attach="material"
+                               topColor={foliageColor(topDensity)}
+                               bottomColor={foliageColor(bottomDensity)} time={1}/>
+
+}, (densities) => densities.join(','))
 
 export function Trees(props) {
-    const {tops, bottoms, watered} = props;
+    const {datums, columns, rows,  markers} = props;
     const treeModel = useGLTF(modelURL.href);
-    const topmm = findMinMax2D(tops);
-    const bottomsmm = findMinMax2D(bottoms);
-    const weteredmm = findMinMax2D(watered);
-    const treeHeightScale = domain2range(weteredmm, [0.5, 2]);
 
-    return tops.map((row, z, rows) => {
-        return row.map((number, x, columns) => {
-            let tx = x - ((columns.length - 1) / 2)
-            let tz = z - ((rows.length - 1) / 2)
-            let key = `${tx}${tz}`
-            let topDensity = tops[z][x]
-            let bottomDensity = bottoms[z][x]
-            let water = watered[z][x]
+    return datums.map((data, index) => {
+        let {densities, watered} = data;
+        let x = index % columns
+        let z = Math.floor(index / columns)
 
-            return <Tree key={key} treeModel={treeModel}
-                         position={[tx, -3, tz]}
-                         topDensity={topDensity}
-                         bottomDensity={bottomDensity}
-                         water={water}
-                         heightScale={treeHeightScale(water)}
-            />
-        })
+        let cx = x - ((columns - 1) / 2)
+        let cz = z - ((rows - 1) / 2)
+
+        return <Tree key={index} treeModel={treeModel}
+                     position={[cx, -2, cz]}
+                     marker={markers.includes(index)}
+                     densities={densities}
+                     watered={watered}
+                     index={index}
+                     heightScale={treeHeightScale(watered)}
+        />
+
     })
 }
 
 export default function Tree(props) {
-    const {treeModel, heightScale = 1, topDensity, bottomDensity, water} = props;
+    const {index, treeModel, heightScale = 1, densities, watered, marker} = props;
     const {nodes, materials} = treeModel;
     const group = useRef();
 
-    let densityColor = `hsl(${360 * topDensity / 500}, 100%, 50%)`;
     const leafGeometry = nodes.Plane283.geometry
     const leafMaterial = nodes.Plane283.material
 
     return (
-        <group ref={group} {...props} dispose={null}>
-            {/*<group*/}
-            {/*    position={[0, 2, 0]}*/}
-            {/*    rotation-x={-.9}*/}
-            {/*>*/}
-            {/*    /!*<mesh name="Tree" scale={.5}>*!/*/}
-            {/*    /!*    <planeGeometry args={[1, 1]}/>*!/*/}
-            {/*    /!*    <meshBasicMaterial color={densityColor} transparent/>*!/*/}
-            {/*    /!*</mesh>*!/*/}
-            {/*    /!*<Text color="black" anchorX="center" anchorY="middle" position={[0, 0, 0.1]}>*!/*/}
-            {/*    /!*    {density}*!/*/}
-            {/*    /!*</Text>*!/*/}
-            {/*</group>*/}
-            <mesh name="breed" castShadow
+        <group ref={group} {...props} dispose={null} raycast={() => null}>
+            <Text position={[0, 1, 0]}
+                  rotation={[0, Math.PI, 0]}
+                  fontSize={.4}>{index}</Text>
+            <mesh name="water" position={[0, -.5, 0]}
+                  geometry={waterGeometry}
+                  material={waterMaterials.let(watered)}/>
+
+            <mesh name="marker" position={[0, 2, 0]}
+                  visible={marker}
+                  geometry={markerGeometry}
+                  material={markerMaterials}/>
+            />
+
+            <mesh name="breed"
                   geometry={nodes.Circle025.geometry}
                   material={materials.Wood}
                   rotation={[-Math.PI, -0.19, -Math.PI]}
                   scale={[1, heightScale, 1]}
             />
-            <mesh name="foliage" castShadow
+            <mesh name="foliage"
+                  visible={true}
                   geometry={nodes.Roundcube028.geometry}
-                  position={[0, heightScale * 0.85, 0]}
+                  position={[0, heightScale + .1, 0]}
             >
-                <FoliageMaterial attach="material" color="hotpink" time={1}/>
-                {/*<meshBasicMaterial color={densityColor} fog={true}/>*/}
-                {/*<meshBasicMaterial toneMapped={false} fog={false} />*/}
+                {foliageMaterials.let(densities)}
+
                 <mesh
                     geometry={leafGeometry}
                     material={leafMaterial}

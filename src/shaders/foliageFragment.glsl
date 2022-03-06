@@ -1,14 +1,14 @@
-precision mediump float;
-#define pi  3.141592653589793
+uniform float time;
+uniform vec3 topColor;
+uniform vec3 bottomColor;
 
-uniform vec3 uColorTop;
-uniform vec3 uColorBottom;
+varying vec2 v_uv;
+varying vec4 v_modelPosition;
+varying vec3 v_position;
 
-void main()
-{
-    float strength;
-
-    gl_FragColor = vec4(0.0,1.0,1.0,1.0);
-
-
+void main() {
+    // position coordinates run from -0.5 to 0.5
+    vec3 color = mix(bottomColor, topColor, step(0.5,v_position.y + 0.5));
+//    vec3 color = mix(bottomColor, topColor, v_position.y + 0.5);
+    gl_FragColor.rgba = vec4(color, 1.0);
 }

@@ -8,8 +8,19 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
+@media (orientation: landscape) {
+  .App {
+    display: grid;
+    grid-template-areas:
+      "header header"
+      "main-1 main-2"
+      "footer footer";
+
+  }
+}
 .App-logo {
   height: 5vmin;
   pointer-events: none;
@@ -29,6 +40,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  grid-area: header;
 }
 
 .App-link {
@@ -54,8 +66,18 @@ a{
 
 .tree-field{
   height: 50rem !important;
+  grid-area: main-1;
 }
-.grid{
+.grid-control{
+  grid-area: main-2;
   flex:1;
+  overflow: auto;
+}
+
+.grid{
   align-self: center;
-  }
+}
+
+footer{
+  grid-area: footer;
+}

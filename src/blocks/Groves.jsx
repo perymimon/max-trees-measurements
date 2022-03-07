@@ -1,4 +1,4 @@
-import Markers from "../components/tree-fiver/Markers";
+import Ruler from "../components/tree-fiver/Ruler";
 import React from "react";
 import {Trees} from "/src/components/tree-fiver/3d-Tree";
 import {ScrollControls} from "@react-three/drei";
@@ -7,6 +7,8 @@ import {useSnapshot} from "valtio";
 import {Minimap} from "/src/components/tree-fiver/MiniMap";
 
 import '/src/myModification/controls.css'
+import Grounds from "./Grounds";
+import Markers from "../components/tree-fiver/Ruler";
 
 export function Groves() {
 
@@ -45,19 +47,21 @@ export function Groves() {
 
     return (
         <ScrollControls damping={10} distance={1} pages={snap.days.length}>
-            <Minimap items={snap.days}
-                     onPageChange={handlePageIndex}
-            />
-            <Markers length={dayData.rows}
-                     position={[-dayData.columns / 2 + .5, 2.5, 0]}
-                     rotation={[0, -Math.PI / 2, 0]}
-                     onOver={i => handleRowOver(i)}/>
-            <Markers length={dayData.columns}
-                     position={[0, 2.5, -dayData.rows / 2]}
-                     onOver={i => handleColumnOver(i)}/>
+            <Minimap items={snap.days} onPageChange={handlePageIndex}/>
+            <Ruler length={dayData.rows}
+                   position={[-dayData.columns / 2 - .5, -2, 0]}
+                   rotation={[0, -Math.PI / 2, 0]}
+                   onOver={i => handleRowOver(i)}/>
+            <Ruler length={dayData.columns}
+                   position={[0, -2, -dayData.rows / 2 - .5]}
+                   onOver={i => handleColumnOver(i)}/>
+            <Markers markers={proxyState.marker}/>
+            <Grounds {...dayData} size={0.9} />
             <Trees {...dayData} markers={snap.marker}/>
         </ScrollControls>
     )
+
+
 }
 
 export default Groves;

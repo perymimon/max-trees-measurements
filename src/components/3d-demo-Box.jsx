@@ -18,8 +18,8 @@ export default function Box(props) {
             onClick={(event) => click(!clicked)}
             onPointerOver={(event) => hover(true)}
             onPointerOut={(event) => hover(false)}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+            <boxGeometry name="demo-box-geometry" args={[1, 1, 1]} />
+            <meshStandardMaterial name="demo-box-material" color={hovered ? 'hotpink' : 'orange'} />
         </mesh>
     )
 }

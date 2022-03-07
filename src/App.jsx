@@ -5,19 +5,19 @@ import './myModification/controls.css'
 import {Canvas} from '@react-three/fiber'
 import BoxModel from './components/3d-demo-Box'
 import {Environment, OrbitControls} from '@react-three/drei'
-
 import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
 
 function App() {
-    debugger;
     return (
         <Suspense fallback={"Loading ..."}>
             <div className="App">
                 <Header/>
-                <Canvas className="tree-field"
-                        gl={{antialias: false}} dpr={[1, 1.5]} camera={{fov: 30, position: [30, 20, -30]}}>
+                <Canvas className="tree-field" frameloop="demand"
+                        gl={{antialias: true}}
+                        dpr={[1, 1.5]}
+                        camera={{fov: 30, position: [30, 20, -30]}}>
                     <OrbitControls minPolarAngle={-Math.PI / 2}
                                    maxPolarAngle={Math.PI / 1.7}/>
                     <Environment preset="park" background={true}/>
@@ -28,7 +28,9 @@ function App() {
                     <BoxModel position={[1.2, 0, 0]}/>
                     <Groves/>
                 </Canvas>
-                <TableControl/>
+                <div className="grid-control">
+                    <TableControl/>
+                </div>
                 <footer>
                     by <a href="https://github.com/perymimon">Pery Mimon</a>
                 </footer>

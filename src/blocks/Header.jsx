@@ -6,7 +6,8 @@ import {useSnapshot} from "valtio";
 
 export  function Header(){
     const snap = useSnapshot(proxyState);
-    const day = snap.days[snap.dayIndex]
+    const day = snap.dayName
+
     return (  <header className="App-header">
         <Time/>
         <img src={logo} className="App-logo" alt="logo"/>

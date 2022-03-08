@@ -1,30 +1,32 @@
-import {BoxGeometry, MeshBasicMaterial} from "three";
-import {useRef} from "react";
+import { MeshBasicMaterial} from "three";
+import {useSnapshot} from "valtio";
+import proxyState from "/src/state";
 
-const markerGeometry = new BoxGeometry(1, 4, 1)
 const markerMaterials = new MeshBasicMaterial({
     color: 'white',
     transparent: true,
     opacity: 0.8,
 })
 
-export function Marker(props){
-    const {marker} = props
-    const {position, rotation, size} = props
-    const ref = useRef()
-
-    useFrame(() => {
-        ref.current.position.copy(position)
-        ref.current.rotation.copy(rotation)
-        ref.current.scale.set(size, size, size)
-    })
+export default function Markers(props){
+    const snap = useSnapshot(proxyState);
+    const markers = snap.markers;
 
     return (
-        <mesh ref={ref} name="marker" position={[0, 2, 0]}
-              visible={marker}
-              geometry={markerGeometry}
-              material={markerMaterials}/>
-    );
+        <>
+            {markers.map((block, index) => {
+                const {x, y, w,h} = block;
+                return (
+                    <mesh key={index} position={[x,0,y]}>
+                        <meshBasicMaterial color="white" transparent opacity={0.8}
+                                           material={markerMaterials}
+                        />
+                        <boxGeometry args={[w, 4, h]}/>
+                    </mesh>
+                )
+            })}
+        </>
+    )
 }
 
-export default Marker;
+

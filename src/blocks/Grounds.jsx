@@ -1,7 +1,9 @@
 import {BoxGeometry, Color, MeshStandardMaterial, Object3D} from "three";
 import {domain2range} from "../helper/math";
 import {useEffect, useRef} from "react";
-import LetMap from "../helper/let-map";
+import {useSnapshot} from "valtio";
+import proxyState from "/src/state";
+
 
 const normalWater = domain2range([0, 5], [0.2, 1]);
 
@@ -10,12 +12,6 @@ const waterColor = (density) => {
     color.setHSL(225 / 360, normalWater(density), 0.5);
     return color;
 }
-
-// const waterMaterials = new LetMap(index => {
-//     return  new MeshStandardMaterial({
-//         name: "waterMaterial-" + index, color: waterColor(index)
-//     })
-// })
 
 const waterGeometry = new BoxGeometry(1, 1, 1)
 waterGeometry.name = "waterGeometry"
@@ -26,25 +22,23 @@ const waterMaterial = new MeshStandardMaterial({
 
 const temp = new Object3D()
 
-export function Grounds(props) {
-    const {columns, rows, size = 1, datums} = props;
+export function Grounds({size =1}) {
+    const snap = useSnapshot(proxyState)
+    const board = snap.board;
+    const {datums} = snap.currentDayData;
+
     const ref = useRef()
 
-    let cx = ((columns - 1) / 2)
-    let cz = ((rows - 1) / 2)
-    const count = columns * rows
-
     useEffect(_ => {
-        for (let index = 0; index < count; index++) {
-            let {densities, watered} = datums[index]
-            let x = index % columns
-            let z = Math.floor(index / columns)
+        for (let i = 0; i < board.len; i++) {
+            let {watered} = datums[i]
+            let {x,y} = board.xy(i)
 
-            temp.position.set(cx - x, -2, cz - z)
+            temp.position.set( x, -2.01, y)
             temp.scale.set(size, size, size)
             temp.updateMatrix()
-            ref.current.setMatrixAt(index, temp.matrix)
-            ref.current.setColorAt(index, waterColor(watered))
+            ref.current.setMatrixAt(i, temp.matrix)
+            ref.current.setColorAt(i, waterColor(watered))
         }
         // Update the instance
         ref.current.instanceMatrix.needsUpdate = true
@@ -53,7 +47,7 @@ export function Grounds(props) {
     }, [])
 
     return (
-        <instancedMesh ref={ref} args={[waterGeometry, waterMaterial, count]}/>
+        <instancedMesh ref={ref} args={[waterGeometry, waterMaterial, board.len]}/>
     )
 
 }

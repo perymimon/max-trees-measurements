@@ -20,13 +20,17 @@ function App() {
                         camera={{fov: 30, position: [30, 20, -30]}}>
                     <OrbitControls minPolarAngle={-Math.PI / 2}
                                    maxPolarAngle={Math.PI / 1.7}/>
-                    <Environment preset="park" background={true}/>
+                    <Suspense fallback={"Loading Env"}>
+                        <Environment preset="park" background={true}/>
+                    </Suspense>
                     {/*<ambientLight intensity={0.2}/>*/}
                     {/*<spotLight position={[10, 10, 10]} angle={0.15} penumbra={1}/>*/}
                     {/*<pointLight position={[-10, -10, -10]}/>*/}
                     <BoxModel position={[-1.2, 0, 0]}/>
                     <BoxModel position={[1.2, 0, 0]}/>
-                    <Groves/>
+                    <Suspense fallback={"Loading Model"}>
+                        <Groves/>
+                    </Suspense>
                 </Canvas>
                 <div className="grid-control">
                     <TableControl/>

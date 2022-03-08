@@ -1,12 +1,15 @@
 import React, {useRef} from "react";
 import {useGLTF, Text, shaderMaterial} from "@react-three/drei";
 import {domain2range} from "/src/helper/math";
-import {Color, BoxGeometry, MeshStandardMaterial, MeshBasicMaterial} from "three";
+import {Color} from "three";
 import LetMap from "/src/helper/let-map";
+
 
 import basicVertex from "/src/shaders/basicVertex.glsl?raw";
 import foliageFragment from "/src/shaders/foliageFragment.glsl?raw";
 import {extend} from "@react-three/fiber";
+import {useSnapshot} from "valtio";
+import state from "/src/state";
 
 const modelUrl = './3d-models/treeModel-low.glb'
 
@@ -38,18 +41,14 @@ const foliageMaterials = new LetMap(([topDensity, bottomDensity]) => {
 }, (densities) => densities.join(','))
 
 export function Trees(props) {
-    const {datums, columns, rows, markers} = props;
+    const snap = useSnapshot(state)
+    const {board, currentDayData} = snap
 
-    let cx = ((columns - 1) / 2)
-    let cz = ((rows - 1) / 2)
-
-    return datums.map((data, index) => {
-        let x = index % columns
-        let z = Math.floor(index / columns)
-
+    return currentDayData.datums.map((data, index) => {
+        const {x,y}= board.xy(index)
+        if(index === 0) console.log('densities', data.densities)
         return <Tree key={index}
-                     position={[cx - x, -2, cz - z]}
-                     marker={markers.includes(index)}
+                     position={[x, -2, y]}
                      data={data}
                      index={index}
         />
@@ -58,14 +57,14 @@ export function Trees(props) {
 }
 
 export default function Tree(props) {
-    const {index, marker} = props;
+    const {index} = props;
     const {densities, watered} = props.data;
     const {nodes, materials} = useGLTF(modelUrl);
     const group = useRef();
     const heightScale = treeHeightScale(watered)
 
-    const leafGeometry = nodes.Plane283.geometry
-    const leafMaterial = nodes.Plane283.material
+    // const leafGeometry = nodes.Plane283.geometry
+    // const leafMaterial = nodes.Plane283.material
 
 
     return (

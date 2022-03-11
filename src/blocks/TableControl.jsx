@@ -4,14 +4,12 @@ import Grid from "/src/components/Grid";
 
 export  function TableControl(){
     const snap = useSnapshot(proxyState);
-
     const dayData = snap.currentDayData
 
-    function handleHover(index) {
-       actions.markIndex(index)
-    }
-
-    return (   <Grid {...dayData} markeds={snap.marker} onMouseOver={handleHover}/>)
+    return (   <Grid {...dayData} markeds={snap.marker}
+                     onMouseOver={actions.markIndex}
+                     focus={snap.focus}
+                     onClick={actions.setFocus}/>)
 }
 
 export default TableControl

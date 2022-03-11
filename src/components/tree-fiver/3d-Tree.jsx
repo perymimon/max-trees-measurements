@@ -1,9 +1,8 @@
-import React, {useRef} from "react";
+import {useRef} from "react";
 import {useGLTF, Text, shaderMaterial} from "@react-three/drei";
 import {domain2range} from "/src/helper/math";
 import {Color} from "three";
 import LetMap from "/src/helper/let-map";
-
 
 import basicVertex from "/src/shaders/basicVertex.glsl?raw";
 import foliageFragment from "/src/shaders/foliageFragment.glsl?raw";
@@ -32,7 +31,6 @@ const foliageColor = (density) => {
 }
 
 
-
 const foliageMaterials = new LetMap(([topDensity, bottomDensity]) => {
     return <colorShiftMaterial attach="material"
                                topColor={foliageColor(topDensity)}
@@ -41,12 +39,13 @@ const foliageMaterials = new LetMap(([topDensity, bottomDensity]) => {
 }, (densities) => densities.join(','))
 
 export function Trees(props) {
+    console.log('rendering trees')
     const snap = useSnapshot(state)
-    const {board, currentDayData} = snap
+    const {board, dayInfo} = snap
 
-    return currentDayData.datums.map((data, index) => {
-        const {x,y}= board.xy(index)
-        if(index === 0) console.log('densities', data.densities)
+    return dayInfo.datums.map((data, index) => {
+        const {x, y} = board.xy(index)
+        // if (index === 0) console.log('densities', data.densities)
         return <Tree key={index}
                      position={[x, -2, y]}
                      data={data}
@@ -54,6 +53,7 @@ export function Trees(props) {
         />
 
     })
+    return null
 }
 
 export default function Tree(props) {
@@ -66,16 +66,13 @@ export default function Tree(props) {
     // const leafGeometry = nodes.Plane283.geometry
     // const leafMaterial = nodes.Plane283.material
 
-
     return (
-        <group ref={group} {...props} dispose={null} raycast={() => null}>
+        <group
+            visible={true}
+            name={"tree-" + index} ref={group} {...props} dispose={null} raycast={() => null}>
             <Text position={[0, .5, 0]}
-                  rotation={[Math.PI /2, Math.PI, 0]}
+                  rotation={[Math.PI / 2, Math.PI, 0]}
                   fontSize={.4}>{index}</Text>
-
-
-
-
 
             <mesh name="breed"
                   geometry={nodes.Circle025.geometry}

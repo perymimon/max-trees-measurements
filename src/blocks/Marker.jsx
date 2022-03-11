@@ -10,11 +10,10 @@ const markerMaterials = new MeshBasicMaterial({
 
 export default function Markers(props){
     const snap = useSnapshot(proxyState);
-    const markers = snap.markers;
 
     return (
         <>
-            {markers.map((block, index) => {
+            {snap.markers.map((block, index) => {
                 const {x, y, w,h} = block;
                 return (
                     <mesh key={index} position={[x,0,y]}>

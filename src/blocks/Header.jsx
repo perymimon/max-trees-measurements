@@ -1,4 +1,4 @@
-import Time from "/src/components/demo-async-hook";
+// import Time from "/src/components/demo-async-hook";
 import logo from "/src/logo.svg";
 import React from "react";
 import proxyState from "/src/state";
@@ -9,7 +9,7 @@ export  function Header(){
     const day = snap.dayName
 
     return (  <header className="App-header">
-        <Time/>
+        {/*<Time/>*/}
         <img src={logo} className="App-logo" alt="logo"/>
         <p>Hello Tree Measurements day {day}</p>
     </header>)

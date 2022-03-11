@@ -2,7 +2,9 @@ import "./grid.css";
 import React from "react";
 
 export function Grid(props) {
-    const {datums, columns, rows, onMouseOver, markeds = []} = props;
+    const {datums, columns, rows, focus} = props;
+    const {onMouseOver, onMouseOut, onClick} = props;
+
 
     const style ={
         "--grid-columns": columns,
@@ -11,10 +13,12 @@ export function Grid(props) {
     return (
         <div className="grid" style={style} >
             {datums.map((cell, index) => {
-                const mark = markeds.includes(index) ? "marked" : "";
+                let focusClass = focus === index ? "focus" : "";
                 return <div key={index}
                             onMouseOver={() => onMouseOver?.(index)}
-                            className={`grid-cell ${mark}`}>
+                            onMouseOut={() => onMouseOut?.(index)}
+                            onClick={() => onClick?.(index)}
+                            className={`grid-cell ${focusClass}`}>
                     t: {cell.top} <br/>
                     b: {cell.bottom} <br/>
                     w: {cell.watered} <br/>

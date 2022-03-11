@@ -9,7 +9,7 @@ const rawState = {
     dayIndex: 0,
     daysData: ref(new Map()),
     markers: [],
-
+    focus: null // index of tree
 }
 
 const getters = {
@@ -21,15 +21,17 @@ const getters = {
         let s = get(state)
         return rawState.daysData.get(s.dayName);
     },
+    dayInfo(get) {
+        let s = get(state)
+        return s.daysData.get(s.dayName);
+    },
     board(get) {
         let s = get(state)
         let dd = s.currentDayData;
         let {columns, rows} = dd;
         return {
-            cx: (columns - 1) / 2,
-            cy: (rows - 1) / 2,
-            w: columns,
-            h: rows,
+            cx: (columns - 1) / 2, cy: (rows - 1) / 2,
+            w: columns, h: rows,
             len: columns * rows,
             xi(i) {
                 let {board} = state;
@@ -52,6 +54,9 @@ const getters = {
 }
 
 export const actions = {
+    setDay(pageIndex){
+        state.dayIndex = pageIndex;
+    },
     markColumns(columns) {
         let {cx, h} = state.board;
         let markers = [];
@@ -81,6 +86,13 @@ export const actions = {
             x, y, w: 1, h: 1, color: 'white', text: '',
         }
         state.markers = [marker];
+    },
+    setFocus(index) {
+        if (state.focus === index) {
+            state.focus = null;
+        } else {
+            state.focus = index;
+        }
     },
 }
 

@@ -8,6 +8,7 @@ import {Environment, OrbitControls} from '@react-three/drei'
 import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
+import FocusControls from "./blocks/Focus";
 
 function App() {
     return (
@@ -18,8 +19,8 @@ function App() {
                         gl={{antialias: true}}
                         dpr={[1, 1.5]}
                         camera={{fov: 30, position: [30, 20, -30]}}>
-                    <OrbitControls minPolarAngle={-Math.PI / 2}
-                                   maxPolarAngle={Math.PI / 1.7}/>
+
+                    <FocusControls />
                     <Suspense fallback={"Loading Env"}>
                         <Environment preset="park" background={true}/>
                     </Suspense>

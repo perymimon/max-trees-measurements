@@ -16,7 +16,6 @@ o3dCamera.isCamera = true;
 export function FocusControls({}) {
     const snap = useSnapshot(state)
     const {focus, board} = snap;
-    const treeState = useThree();
     const controlsRef = useRef();
     const [enabledControls, enablingControls] = React.useState(true);
 
@@ -34,8 +33,8 @@ export function FocusControls({}) {
             console.log('enabling controls')
 
             const controls = controlsRef.current
-            controls.target = new Vector3(x, 0, y)
-            controls.update();
+            controls.target.copy(pCL)
+            // controls.update();
             enablingControls(true);
         }
         const dom = document.querySelector('.tree-field');

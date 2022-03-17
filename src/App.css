@@ -11,7 +11,7 @@
   overflow: hidden;
 }
 
-@media (orientation: landscape) {
+@media screen  and (orientation: landscape) and (min-width:1081px) {
   .App {
     display: grid;
     grid-template-areas:

@@ -10,13 +10,14 @@ import Grounds from "./Grounds";
 import Markers from "../blocks/Marker";
 
 export function Groves() {
+    console.log('rendering Groves')
 
     const snap = useSnapshot(proxyState);
     const {board} = snap
 
     return (
-        <ScrollControls damping={10} distance={1} pages={snap.days.length}>
-            <Minimap items={snap.days} onPageChange={actions.setDay}/>
+        <ScrollControls damping={1} distance={.2} pages={snap.days.length}>
+            <Minimap items={snap.days} onPageMove={actions.updateDay}/>
             <Ruler length={board.h}
                    position={[board.cx + 1, -2, 0]}
                    rotation={[0, -Math.PI / 2, 0]}

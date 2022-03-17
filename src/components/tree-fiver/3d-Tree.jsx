@@ -45,7 +45,9 @@ export function Trees(props) {
 
     return dayInfo.datums.map((data, index) => {
         const {x, y} = board.xy(index)
+
         // if (index === 0) console.log('densities', data.densities)
+        data.densities // for some reason, this is necessary to make trees reRenders
         return <Tree key={index}
                      position={[x, -2, y]}
                      data={data}
@@ -53,7 +55,6 @@ export function Trees(props) {
         />
 
     })
-    return null
 }
 
 export default function Tree(props) {

@@ -4,7 +4,7 @@ import Grid from "/src/components/Grid";
 
 export  function TableControl(){
     const snap = useSnapshot(proxyState);
-    const dayData = snap.currentDayData
+    const dayData = snap.dayInfo
 
     return (   <Grid {...dayData} markeds={snap.marker}
                      onMouseOver={actions.markIndex}

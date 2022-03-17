@@ -4,11 +4,11 @@ import './myModification/controls.css'
 
 import {Canvas} from '@react-three/fiber'
 import BoxModel from './components/3d-demo-Box'
-import {Environment, OrbitControls} from '@react-three/drei'
+import {Environment} from '@react-three/drei'
 import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
-import FocusControls from "./blocks/Focus";
+import FocusControls from "./blocks/FocusControl";
 
 function App() {
     return (

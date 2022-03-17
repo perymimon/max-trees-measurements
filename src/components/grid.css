@@ -9,6 +9,7 @@
     font-family: monospace;
     gap: 0.2em;
 }
+
 .grid > *{
     grid-column: span 1;
     grid-row: span 1;
@@ -19,7 +20,7 @@
 
 }
 
-.grid > *:is(*:hover, *.marked) {
+.grid > *:is(*:hover, *.marked):not(header){
     background-color: #fff;
     color: gray;
     font-weight: bold;
@@ -33,4 +34,11 @@
     font-weight: bold;
     font-size: 1.1em;
     box-shadow: 0 0 0.2em 0.2em #ccc;
+}
+
+.grid > header{
+    grid-column-start: 1;
+    grid-column-end: -1;
+    font-size: 1rem;
+    color:wheat
 }

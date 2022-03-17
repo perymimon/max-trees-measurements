@@ -31,3 +31,7 @@ export function domain2range(domain, range) {
 }
 
 export const damp = MathUtils.damp;
+
+export function clamp(value, min = -Infinity, max = Infinity) {
+  return Math.min(Math.max(value, min), max);
+}

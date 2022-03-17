@@ -6,7 +6,9 @@ const csvFiles = import.meta.glob('/public/data/*.csv', {assert: {type: 'raw'}})
 console.log('files', csvFiles);
 const rawState = {
     days: ['2020-03-13', '2020-08-02'],
-    dayIndex: 0,
+    dayStart: 0,
+    dayEnd: 1,
+    weight: 0,
     daysData: ref(new Map()),
     markers: [],
     focus: null // index of tree
@@ -15,11 +17,15 @@ const rawState = {
 const getters = {
     dayName(get) {
         let s = get(state)
-        return s.days[s.dayIndex];
+        return s.days[s.dayStart];
     },
-    currentDayData(get) {
+    dayStartName(get) {
         let s = get(state)
-        return rawState.daysData.get(s.dayName);
+        return s.days[s.dayStart];
+    },
+    dayEndName(get) {
+        let s = get(state)
+        return s.days[s.dayEnd];
     },
     dayInfo(get) {
         let s = get(state)
@@ -27,7 +33,7 @@ const getters = {
     },
     board(get) {
         let s = get(state)
-        let dd = s.currentDayData;
+        let dd = s.dayInfo;
         let {columns, rows} = dd;
         return {
             cx: (columns - 1) / 2, cy: (rows - 1) / 2,
@@ -54,8 +60,17 @@ const getters = {
 }
 
 export const actions = {
-    setDay(pageIndex){
-        state.dayIndex = pageIndex;
+    setDay(event) {
+        state.dayStart = event.pageStart;
+    },
+    updateDay(event) {
+        const {pageStart, pageEnd, weight} = event;
+        Object.assign(state,{
+            dayStart:pageStart,
+            dayEnd:pageEnd,
+            weight
+        });
+
     },
     markColumns(columns) {
         let {cx, h} = state.board;
@@ -126,10 +141,10 @@ function processDataOfDay(day) {
 
     let datums = tops.map((_, index) => {
         return {
-            densities: [tops[index], bottoms[index]],
-            top: tops[index],
-            bottom: bottoms[index],
-            watered: watered[index],
+            densities: [+tops[index], +bottoms[index]],
+            top: +tops[index],
+            bottom: +bottoms[index],
+            watered: +watered[index],
         }
     })
 

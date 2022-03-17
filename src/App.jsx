@@ -18,7 +18,7 @@ function App() {
                 <Canvas className="tree-field" frameloop="demand"
                         gl={{antialias: true}}
                         dpr={[1, 1.5]}
-                        camera={{fov: 30, position: [30, 20, -30]}}>
+                        camera={{fov: 30, position: [30, 10, 30]}}>
 
                     <FocusControls />
                     <Suspense fallback={"Loading Env"}>

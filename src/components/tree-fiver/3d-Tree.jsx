@@ -3,12 +3,14 @@ import {useGLTF, Text, shaderMaterial} from "@react-three/drei";
 import {domain2range} from "/src/helper/math";
 import {Color} from "three";
 import LetMap from "/src/helper/let-map";
+import useRefs from 'react-use-refs'
 
 import basicVertex from "/src/shaders/basicVertex.glsl?raw";
 import foliageFragment from "/src/shaders/foliageFragment.glsl?raw";
-import {extend} from "@react-three/fiber";
+import {extend, useFrame} from "@react-three/fiber";
 import {useSnapshot} from "valtio";
 import state from "/src/state";
+import {lerp} from "three/src/math/MathUtils";
 
 const modelUrl = './3d-models/treeModel-low.glb'
 
@@ -36,7 +38,10 @@ const foliageMaterials = new LetMap(([topDensity, bottomDensity]) => {
                                topColor={foliageColor(topDensity)}
                                bottomColor={foliageColor(bottomDensity)} time={1}/>
 
-}, (densities) => densities.join(','))
+}, (densities) => {
+    if (!densities.join) debugger;
+    return densities.join(',')
+})
 
 export function Trees(props) {
     console.log('rendering trees')
@@ -61,12 +66,22 @@ export default function Tree(props) {
     const {index} = props;
     const {densities, watered} = props.data;
     const {nodes, materials} = useGLTF(modelUrl);
-    const group = useRef();
     const heightScale = treeHeightScale(watered)
-
+    const [group, bread, foliage] = useRefs()
     // const leafGeometry = nodes.Plane283.geometry
     // const leafMaterial = nodes.Plane283.material
-
+    useFrame((treeState, dt) => {
+        let breadScale = bread.current.scale;
+        let foliagePosition = foliage.current.position;
+        let foliageMaterial = foliage.current.material;
+        foliageMaterial
+            .uniforms.topColor
+            .value.lerp(foliageColor(densities[0]), 0.03);
+        foliageMaterial.uniforms.bottomColor
+            .value.lerp(foliageColor(densities[1]), 0.03);
+        breadScale.y = lerp(breadScale.y, heightScale, 0.06)
+        foliagePosition.y = lerp(foliagePosition.y, heightScale + .04, 0.06)
+    })
     return (
         <group
             visible={true}
@@ -76,15 +91,17 @@ export default function Tree(props) {
                   fontSize={.4}>{index}</Text>
 
             <mesh name="breed"
+                  ref={bread}
                   geometry={nodes.Circle025.geometry}
                   material={materials.Wood}
                   rotation={[-Math.PI, -0.19, -Math.PI]}
-                  scale={[1, heightScale, 1]}
+
             />
             <mesh name="foliage"
+                  ref={foliage}
                   visible={true}
                   geometry={nodes.Roundcube028.geometry}
-                  position={[0, heightScale + .1, 0]}
+
             >
                 {foliageMaterials.let(densities)}
 

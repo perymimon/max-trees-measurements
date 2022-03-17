@@ -29,32 +29,34 @@ const getters = {
     },
     dayInfo(get) {
         let s = get(state)
-        let ds = s.daysData.get(s.dayStartName);
-        let de = s.daysData.get(s.dayEndName);
-        let w = s.weight;
-        let d = [];
-        let {datums: dsDatums, columns, rows} = ds, {datums: deDatums} = de;
+        // let ds = s.daysData.get(s.dayStartName);
+        // let de = s.daysData.get(s.dayEndName);
+        // let w = s.weight;
+        // let d = [];
+        // let {datums: dsDatums, columns, rows} = ds, {datums: deDatums} = de;
+        //
+        // for (let i = 0; i < dsDatums.length; i++) {
+        //     let dsDatumI = dsDatums[i], deDatumI = deDatums[i];
+        //
+        //     let top = (dsDatumI.top + (deDatumI.top - dsDatumI.top) * w).toFixed(0);
+        //     let bottom = (dsDatumI.bottom + (deDatumI.bottom - dsDatumI.bottom) * w).toFixed(0);
+        //     let watered = (dsDatumI.watered + (deDatumI.watered - dsDatumI.watered) * w).toFixed(0);
+        //     d.push({
+        //         densities: [top, bottom],
+        //         top,
+        //         bottom,
+        //         watered
+        //     });
+        // }
+        //
+        // return {
+        //     columns, rows,
+        //     datums: d,
+        //     weight: w,
+        //     dayStart: s.dayStartName, dayEnd: s.dayEndName, day: s.dayStartName
+        // };
 
-        for (let i = 0; i < dsDatums.length; i++) {
-            let dsDatumI = dsDatums[i], deDatumI = deDatums[i];
-
-            let top = (dsDatumI.top + (deDatumI.top - dsDatumI.top) * w).toFixed(0);
-            let bottom = (dsDatumI.bottom + (deDatumI.bottom - dsDatumI.bottom) * w).toFixed(0);
-            let watered = (dsDatumI.watered + (deDatumI.watered - dsDatumI.watered) * w).toFixed(0);
-            d.push({
-                densities: [top, bottom],
-                top,
-                bottom,
-                watered
-            });
-        }
-
-        return {
-            columns, rows,
-            datums: d,
-            weight: w,
-            dayStart: s.dayStartName, dayEnd: s.dayEndName, day: s.dayStartName
-        };
+        return s.daysData.get(s.dayStartName);
     },
     board(get) {
         let s = get(state)

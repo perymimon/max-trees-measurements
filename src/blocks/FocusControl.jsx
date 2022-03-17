@@ -25,7 +25,7 @@ export function FocusControls({}) {
             pCM.set(x + 2, 5, y + 2);
             pCL.set(x,0,y);
         } else {
-            pCM.set(40, 20, -40);
+            pCM.set(30, 10, 30);
             pCL.set(0, 0, 0);
         }
 

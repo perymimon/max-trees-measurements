@@ -39,6 +39,7 @@ export function Grounds({size =1}) {
             temp.updateMatrix()
             ref.current.setMatrixAt(i, temp.matrix)
             ref.current.setColorAt(i, waterColor(watered))
+            debugger
         }
         // Update the instance
         ref.current.instanceMatrix.needsUpdate = true

@@ -23,7 +23,7 @@ export function Groves() {
                    rotation={[0, -Math.PI / 2, 0]}
                    onOver={actions.markRows}/>
             <Ruler length={board.w}
-                   position={[0, -2, -(board.cy + 1)]}
+                   position={[0, -2, (board.cy + 1)]}
                    onOver={actions.markColumns}/>
             <Markers />
             <Grounds size={0.9}/>

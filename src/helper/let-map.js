@@ -29,14 +29,17 @@ export default class LetMap extends Map {
     }
 
     set(k, nv) {
-        k = this.generateKey(k);
+        let gk = this.generateKey(gk);
+        return this.#set(gk, nv);
+    }
 
-        let ov = super.get(k);
-        super.set(k, nv);
-        this.emitter.emit(k /*event name*/, {phase: 'UPDATE', nv, ov});
+    #set(gk, nv) {
+        let ov = super.get(gk);
+        super.set(gk, nv);
+        this.emitter.emit(gk /*event name*/, {phase: 'UPDATE', nv, ov});
         if (ov === void 0)
-            this.emitter.emit('new', k, nv); /*no event update for that*/
-        this.emitter.emit('update', k, nv, ov);
+            this.emitter.emit('new', gk, nv); /*no event update for that*/
+        this.emitter.emit('update', gk, nv, ov);
         return nv;
     }
 
@@ -49,15 +52,14 @@ export default class LetMap extends Map {
         this.emitter.emit('update', {op: 'delete', k, ov});
     }
 
-    let(k) {
+    let(k, ...args) {
         const {struct} = this;
-        let gk = this.generateKey(k);
-        if (struct && !this.has(gk)) {
-            const s = typeof struct == 'function' ? struct(k) :
-                struct.constructor ? new struct.constructor(struct) :
-                    struct
 
-            this.set(k, s)
+        let gk = this.generateKey(k, ...args);
+        if (struct && !this.has(gk)) {
+            const s = typeof struct == 'function' ? struct(k, ...args) : struct;
+            struct.constructor ? new struct.constructor(struct) : struct
+            this.#set(gk, s)
         }
         return super.get(gk);
     }

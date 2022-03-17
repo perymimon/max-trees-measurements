@@ -25,7 +25,7 @@ const temp = new Object3D()
 export function Grounds({size =1}) {
     const snap = useSnapshot(proxyState)
     const board = snap.board;
-    const {datums} = snap.currentDayData;
+    const {datums} = snap.dayInfo;
 
     const ref = useRef()
 

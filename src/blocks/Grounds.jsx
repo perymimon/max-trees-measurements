@@ -39,13 +39,13 @@ export function Grounds({size =1}) {
             temp.updateMatrix()
             ref.current.setMatrixAt(i, temp.matrix)
             ref.current.setColorAt(i, waterColor(watered))
-            debugger
+
         }
         // Update the instance
         ref.current.instanceMatrix.needsUpdate = true
         ref.current.instanceColor.needsUpdate = true;
 
-    }, [])
+    }, [board])
 
     return (
         <instancedMesh ref={ref} args={[waterGeometry, waterMaterial, board.len]}/>

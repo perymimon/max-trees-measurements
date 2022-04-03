@@ -8,23 +8,18 @@ import {Minimap} from "/src/components/tree-fiver/MiniMap";
 import '/src/myModification/controls.css'
 import Grounds from "./Grounds";
 import Markers from "../blocks/Marker";
+import Rulers from "./Rulers";
+import MiniMapSun from "./MiniMapSun";
 
 export function Groves() {
     console.log('rendering Groves')
 
-    const snap = useSnapshot(proxyState);
-    const {board} = snap
+    // const snap = useSnapshot(proxyState);
 
     return (
-        <ScrollControls damping={1} distance={.2} pages={snap.days.length}>
-            <Minimap items={snap.days} onPageMove={actions.updateDay}/>
-            <Ruler length={board.h}
-                   position={[board.cx + 1, -2, 0]}
-                   rotation={[0, -Math.PI / 2, 0]}
-                   onOver={actions.markRows}/>
-            <Ruler length={board.w}
-                   position={[0, -2, (board.cy + 1)]}
-                   onOver={actions.markColumns}/>
+        <ScrollControls damping={1} distance={.2} pages={2}>
+            <MiniMapSun/>
+            <Rulers/>
             <Markers />
             <Grounds size={0.9}/>
             <Trees/>

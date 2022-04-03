@@ -11,6 +11,7 @@ import Header from "./blocks/Header";
 import FocusControls from "./blocks/FocusControl";
 
 function App() {
+    console.log('rendering app')
     return (
         <Suspense fallback={"Loading ..."}>
             <div className="App">

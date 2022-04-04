@@ -22,7 +22,7 @@ export function FocusControls({}) {
     useEffect(() => {
         const {x, y} = board.xy(focus);
         if (focus !== null) {
-            pCM.set(x + 2, 5, y + 2);
+            pCM.set(x + 2, 4, y + 2);
             pCL.set(x,0,y);
         } else {
             pCM.set(30, 10, 30);
@@ -30,7 +30,7 @@ export function FocusControls({}) {
         }
 
         function on(){
-            console.log('enabling controls')
+            console.log('enabling Focus control')
 
             const controls = controlsRef.current
             controls.target.copy(pCL)

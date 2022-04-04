@@ -9,6 +9,8 @@ const markerMaterials = new MeshBasicMaterial({
 })
 
 export default function Markers(props){
+    console.log('rendering Markers');
+
     const snap = useSnapshot(proxyState);
 
     return (

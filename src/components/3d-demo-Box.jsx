@@ -12,6 +12,7 @@ export default function Box(props) {
     // Return the view, these are regular Threejs elements expressed in JSX
     return (
         <mesh
+            position-y={4}
             {...props}
             ref={ref}
             scale={clicked ? 1.5 : 1}

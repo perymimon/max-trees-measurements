@@ -1,5 +1,5 @@
 .minimap{
-    --w:4rem;
+    --w:5rem;
     --g:.4rem;
     --wg:calc(var(--w) + var(--g));
     --scaleY: 1;
@@ -7,14 +7,22 @@
     display: flex;
     flex-direction: row;
     gap: var(--g);
+    transform:translateX(-50%);
+    width: 100VW;
+    justify-content: center;
+    background-color: rgba(40, 44, 52, 0.2);
 }
 .minimap .line:after{
+    display:block;
     content: "🌞";
     font-size: var(--w);
 }
 .minimap .line {
-    font-size: .7em;
+    font-size: 2em;
+    color:purple;
+    font-weight:bold;
     transform: scale(var(--scaleY));
+    transition: transform 0.3s ease;
 }
 
 /*}.minimap .line{*/

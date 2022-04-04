@@ -2,12 +2,11 @@ import {csvParser} from "./helper/csvParsers";
 import {proxy, ref} from "valtio";
 import {derive} from 'valtio/utils'
 
-const csvFiles = import.meta.glob('/public/data/*.csv', {assert: {type: 'raw'}});
+const csvFiles = import.meta.glob('/public/data/*.csv',  {as: 'raw'});
 console.log('files', csvFiles);
 const rawState = {
     days: ['2020-03-13', '2020-08-02'],
-    dayStart: 0,
-    dayEnd: 1,
+    dayIndex:0,
     weight: 0,
     daysData: ref(new Map()),
     markers: [],
@@ -29,34 +28,8 @@ const getters = {
     },
     dayInfo(get) {
         let s = get(state)
-        // let ds = s.daysData.get(s.dayStartName);
-        // let de = s.daysData.get(s.dayEndName);
-        // let w = s.weight;
-        // let d = [];
-        // let {datums: dsDatums, columns, rows} = ds, {datums: deDatums} = de;
-        //
-        // for (let i = 0; i < dsDatums.length; i++) {
-        //     let dsDatumI = dsDatums[i], deDatumI = deDatums[i];
-        //
-        //     let top = (dsDatumI.top + (deDatumI.top - dsDatumI.top) * w).toFixed(0);
-        //     let bottom = (dsDatumI.bottom + (deDatumI.bottom - dsDatumI.bottom) * w).toFixed(0);
-        //     let watered = (dsDatumI.watered + (deDatumI.watered - dsDatumI.watered) * w).toFixed(0);
-        //     d.push({
-        //         densities: [top, bottom],
-        //         top,
-        //         bottom,
-        //         watered
-        //     });
-        // }
-        //
-        // return {
-        //     columns, rows,
-        //     datums: d,
-        //     weight: w,
-        //     dayStart: s.dayStartName, dayEnd: s.dayEndName, day: s.dayStartName
-        // };
-
-        return s.daysData.get(s.dayStartName);
+        let date = s.days[s.dayIndex]
+        return s.daysData.get(date);
     },
     board(get) {
         let s = get(state)
@@ -90,14 +63,8 @@ export const actions = {
     setDay(event) {
         state.dayStart = event.pageStart;
     },
-    updateDay(event) {
-        const {pageStart, pageEnd, weight} = event;
-        Object.assign(state,{
-            dayStart:pageStart,
-            dayEnd:pageEnd,
-            weight
-        });
-
+    updateDay(dayIndex) {
+        state.dayIndex = dayIndex
     },
     markColumns(columns) {
         let {cx, h} = state.board;
@@ -148,7 +115,7 @@ const state = proxy(rawState)
 // const state = proxyWithComputed(rawState, getters2)
 // as derive define it run all getters and evaluate them
 derive(getters, {proxy: state})
-
+export default state
 
 function processDataOfDay(day) {
 
@@ -168,6 +135,7 @@ function processDataOfDay(day) {
 
     let datums = tops.map((_, index) => {
         return {
+            index:index,
             densities: [+tops[index], +bottoms[index]],
             top: +tops[index],
             bottom: +bottoms[index],
@@ -178,7 +146,7 @@ function processDataOfDay(day) {
     return {day, datums, columns, rows}
 }
 
-export default state
+
 
 // const getters2 = {
 //     dayName(snap){

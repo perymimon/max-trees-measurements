@@ -23,6 +23,8 @@ const waterMaterial = new MeshStandardMaterial({
 const temp = new Object3D()
 
 export function Grounds({size =1}) {
+    console.log('rendering Grounds');
+
     const snap = useSnapshot(proxyState)
     const board = snap.board;
     const {datums} = snap.dayInfo;

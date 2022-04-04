@@ -1,11 +1,10 @@
-import {Color, BoxGeometry, MeshBasicMaterial, MeshStandardMaterial} from "three";
-import {Text} from "@react-three/drei";
-import {forwardRef, useRef, useState} from "react";
-import LetMap from "../../helper/let-map";
+import {BoxGeometry, MeshBasicMaterial, MeshStandardMaterial} from "three";
+import {memo, Suspense, useLayoutEffect, useMemo, useRef, useState} from "react";
 import useRefs from 'react-use-refs'
-import {useFrame} from "@react-three/fiber";
+import {Text} from "@react-three/drei";
+import {useResource} from "../../helper/miniHooks";
 
-
+// material-toneMapped={false}
 const whiteMaterial = new MeshStandardMaterial({name: 'rollerMaterial', color: 'white'});
 const blackMaterial = new MeshBasicMaterial({name: 'textMaterial', color: 'black'});
 
@@ -13,27 +12,11 @@ const size = 0.9;
 const rollerGeometry = new BoxGeometry(size, size, size);
 rollerGeometry.name = 'rollerGeometry';
 
-const texts = new LetMap(text => {
-    return (
-        <Text name={`text-${text}`}
-              material={textMaterial}
-              fontSize={.6}>{text}</Text>
-    )
-});
-const MyText = forwardRef((props, ref) => {
-    const {text, ...restProps} = props;
-    const textMesh = texts.let(text);
-    return (
-        <group {...restProps} >
-            <primitive object={textMesh} ref={ref}/>
-        </group>
-    )
-});
+const Box = memo(BoxComponent)
 
-
-function Box({position, onOver, onOut, text}) {
+function BoxComponent({position, onOver, onOut, text}) {
     const [txt1, txt2, txt3, box] = useRefs()
-    let [hovered, hover] = useState(null);
+    let [hovered, hover] = useState(false);
 
     function handleHovered(event) {
         event.stopPropagation();
@@ -45,42 +28,54 @@ function Box({position, onOver, onOut, text}) {
         hover(false)
         onOut && onOut(event);
     }
-    useFrame(() => {
-        if(hovered){
-            box.current.material = blackMaterial;
-            txt1.current.material = whiteMaterial;
-            txt2.current.material = whiteMaterial;
-            txt3.current.material = whiteMaterial;
-        }else{
-            box.current.material = whiteMaterial;
-            txt1.current.material = blackMaterial;
-            txt2.current.material = blackMaterial;
-            txt3.current.material = blackMaterial;
-        }
 
-    })
+    const [textMat, cubeMat] = useMemo(_ =>
+            (hovered) ? [blackMaterial, whiteMaterial] : [whiteMaterial, blackMaterial]
+        , [hovered])
 
 
-    return <group position={position} onPointerOver={handleHovered} onPointerOut={handleOut}>
-        <Text ref={txt1} text={text}
+    const [$textRef, $text] = useResource()
 
-              position={[0, 0, -size / 2 - 0.01]}
-              rotation={[0, Math.PI, 0]}
-              fontSize={.6}>{text}</Text>
+    return <group position={position}
+                  onPointerOver={handleHovered}
+                  onPointerOut={handleOut}
+    >
+        <Suspense fallback={"Loading ..."}>
+            <Text
+                ref={$textRef}
+                position={[0, 0, -size / 2 - 0.01]}
+                rotation={[0, Math.PI, 0]}
+                depthTest={false}
+                material={textMat}
+                material-toneMapped={false}
+                fontSize={.6}>{text}</Text>
+            <Text
+                ref={$textRef}
+                position={[0, size / 2 + 0.01, 0]}
+                rotation={[Math.PI / 2, Math.PI, 0]}
+                depthTest={false}
+                material={textMat}
+                material-toneMapped={false}
+                fontSize={.6}>{text}</Text>
+            <Text
+                ref={$textRef}
+                position={[0, 0, size / 2 + 0.01]}
+                rotation={[0, 0, 0]}
+                depthTest={false}
+                material={textMat}
+                material-toneMapped={false}
+                fontSize={.6}>{text}</Text>
+            <Text
+                ref={$textRef}
+                position={[0, 0, size / 2 + 0.01]}
+                rotation={[0, 0, 0]}
+                depthTest={false}
+                material={textMat}
+                material-toneMapped={false}
+                fontSize={.6}>{text}</Text>
 
-        <Text ref={txt2} text={text}
-
-              position={[0, size / 2 + 0.01, 0]}
-              rotation={[Math.PI / 2, Math.PI, 0]}
-              fontSize={.6}>{text}</Text>
-
-        <Text ref={txt3} text={text}
-
-              position={[0, 0, size / 2 + 0.01]}
-              rotation={[0, 0, 0]}
-              fontSize={.6}>{text}</Text>
-
-        <mesh ref={box} geometry={rollerGeometry}/>
+        </Suspense>
+        <mesh ref={box} geometry={rollerGeometry} material={cubeMat}/>
     </group>
 }
 
@@ -98,17 +93,19 @@ export function Ruler(props) {
         onOver?.(markers.current);
     }
 
-    return <group {...props}>
-        <group position={[(length - 1) / 2, 0, 0]}>
-            {Array.from({length: count}, (_, index) => {
-                return <Box key={index}
-                            text={(index + 1) * gap}
-                            onOver={_ => handleMouse(index, true)}
-                            onOut={_ => handleMouse(index, false)}
-                            position={[-index * gap, 0, 0]}/>
-            })}
+    return (
+        <group {...props}>
+            <group position={[(length - 1) / 2, 0, 0]}>
+                {Array(count).fill().map((_, index) => (
+                    <Box key={index}
+                         text={(index + 1) * gap}
+                         onOver={_ => handleMouse(index, true)}
+                         onOut={_ => handleMouse(index, false)}
+                         position={[-index * gap, 0, 0]}/>
+                ))}
+            </group>
         </group>
-    </group>
+    )
 }
 
 export default Ruler;

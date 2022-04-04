@@ -1,17 +1,22 @@
-import React, {Suspense} from 'react'
+import React, {Suspense, useEffect} from 'react'
 import './App.css'
 import './myModification/controls.css'
 
-import {Canvas} from '@react-three/fiber'
+import {Canvas, useThree} from '@react-three/fiber'
 import BoxModel from './components/3d-demo-Box'
 import {Environment} from '@react-three/drei'
 import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
 import FocusControls from "./blocks/FocusControl";
+import {sRGBEncoding} from "three";
 
 function App() {
-    console.log('rendering app')
+    // const {gl} = useThree()
+    // useEffect(() => {
+    //     document.title = '3D Demo'
+    //     gl.outputEncoding = sRGBEncoding;
+    // }, [])
     return (
         <Suspense fallback={"Loading ..."}>
             <div className="App">
@@ -19,7 +24,8 @@ function App() {
                 <Canvas className="tree-field" frameloop="demand"
                         gl={{antialias: true}}
                         dpr={[1, 1.5]}
-                        camera={{fov: 30, position: [30, 10, 30]}}>
+                        camera={{fov: 30, position: [30, 10, 30]}}
+                        linear={true}>
 
                     <FocusControls />
                     <Suspense fallback={"Loading Env"}>

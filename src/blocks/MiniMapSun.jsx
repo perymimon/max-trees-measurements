@@ -4,9 +4,10 @@ import {useSnapshot} from "valtio";
 
 
 export function MiniMapSun(){
+    console.log('rendering miniMap')
     const snap = useSnapshot(proxyState);
 
-    return <Minimap items={snap.days} onPageMove={actions.updateDay}/>
+    return <Minimap items={snap.days} index={snap.dayIndex} onPageChange={actions.updateDay}/>
 }
 
 export default MiniMapSun;

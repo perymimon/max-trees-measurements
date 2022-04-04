@@ -1,4 +1,5 @@
 import {MathUtils} from "three";
+import {lerp} from "three/src/math/MathUtils";
 
 
 export function findMinMax2D(arr) {
@@ -34,4 +35,15 @@ export const damp = MathUtils.damp;
 
 export function clamp(value, min = -Infinity, max = Infinity) {
   return Math.min(Math.max(value, min), max);
+}
+
+export function lerpKey(object, key, to, t, err = 0.02) {
+  if(object[key] === to) return false
+
+  object[key] = lerp(object[key], to, t)
+  let isError = Math.abs(object[key] - to) > err
+  if(!isError) (object[key] = to);
+
+  return true
+
 }

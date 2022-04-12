@@ -1,22 +1,18 @@
-import React, {Suspense, useEffect} from 'react'
+import React, {Suspense} from 'react'
 import './App.css'
 import './myModification/controls.css'
 
-import {Canvas, useThree} from '@react-three/fiber'
+import {Canvas} from '@react-three/fiber'
 import BoxModel from './components/3d-demo-Box'
 import {Environment} from '@react-three/drei'
 import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
 import FocusControls from "./blocks/FocusControl";
-import {sRGBEncoding} from "three";
 
 function App() {
-    // const {gl} = useThree()
-    // useEffect(() => {
-    //     document.title = '3D Demo'
-    //     gl.outputEncoding = sRGBEncoding;
-    // }, [])
+    console.log('rendering App')
+
     return (
         <Suspense fallback={"Loading ..."}>
             <div className="App">
@@ -31,7 +27,7 @@ function App() {
                     <Suspense fallback={"Loading Env"}>
                         <Environment preset="park" background={true}/>
                     </Suspense>
-                    {/*<ambientLight intensity={0.2}/>*/}
+                    <ambientLight intensity={1}/>
                     {/*<spotLight position={[10, 10, 10]} angle={0.15} penumbra={1}/>*/}
                     {/*<pointLight position={[-10, -10, -10]}/>*/}
                     <BoxModel position={[-1.2, 0, 0]}/>

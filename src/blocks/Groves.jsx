@@ -9,7 +9,7 @@ export function Groves() {
     console.log('rendering Groves')
     return (
         <>
-            <MiniMapSun/>
+
             <Rulers/>
             <Markers/>
             <Grounds size={0.9}/>

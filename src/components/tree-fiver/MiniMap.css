@@ -1,31 +1,58 @@
-.minimap{
-    --w:5rem;
-    --g:.4rem;
-    --wg:calc(var(--w) + var(--g));
+.minimap {
+    --w: 5rem;
+    --g: .4rem;
+    --wg: calc(var(--w) + var(--g));
     --scaleY: 1;
 
     display: flex;
     flex-direction: row;
     gap: var(--g);
-    transform:translateX(-50%);
     width: 100VW;
     justify-content: center;
     background-color: rgba(40, 44, 52, 0.2);
+    color: purple;
 }
-.minimap .line:after{
-    display:block;
+
+.minimap .page:after {
+    display: block;
     content: "🌞";
     font-size: var(--w);
 }
-.minimap .line {
+
+.minimap .page {
     font-size: 2em;
-    color:purple;
-    font-weight:bold;
+    font-weight: bold;
     transform: scale(var(--scaleY));
     transition: transform 0.3s ease;
 }
 
-/*}.minimap .line{*/
+.drag-enter.minimap .page {
+    visibility: hidden;
+}
+
+.drag-enter {
+    color: rgba(40, 44, 52, 0.4);
+    background-color: currentColor;
+    border-radius: var(--wg);
+    border: 1px dashed currentColor;
+}
+
+.drag-enter:before {
+    position: absolute;
+    content: "drop here ";
+    font-size: var(--w);
+}
+
+.files-pending{
+    border:1px dashed currentColor;
+    padding:0.2em;
+    margin:0.2em;
+    text-align: left;
+}
+.files-pending.group-complete{
+    color: rgba(155, 160, 167, 0.9);
+}
+/*}.minimap .page{*/
 /*    !*left: `${i * wg}em`,*!*/
 /*    width: var(--w);*/
 /*    height: 3em;*/

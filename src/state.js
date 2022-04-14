@@ -2,11 +2,11 @@ import {csvParser} from "./helper/csvParsers";
 import {proxy, ref} from "valtio";
 import {derive} from 'valtio/utils'
 
-const csvFiles = import.meta.glob('/public/data/*.csv',  {as: 'raw'});
+const csvFiles = import.meta.glob('/public/data/*.csv', {as: 'raw'});
 console.log('files', csvFiles);
 const rawState = {
     days: ['2020-03-13', '2020-08-02'],
-    dayIndex:0,
+    dayIndex: 0,
     weight: 0,
     daysData: ref(new Map()),
     markers: [],
@@ -16,20 +16,11 @@ const rawState = {
 const getters = {
     dayName(get) {
         let s = get(state)
-        return s.days[s.dayStart];
-    },
-    dayStartName(get) {
-        let s = get(state)
-        return s.days[s.dayStart];
-    },
-    dayEndName(get) {
-        let s = get(state)
-        return s.days[s.dayEnd];
+        return s.days[s.dayIndex];
     },
     dayInfo(get) {
         let s = get(state)
-        let date = s.days[s.dayIndex]
-        return s.daysData.get(date);
+        return s.daysData.get(s.dayName);
     },
     board(get) {
         let s = get(state)
@@ -103,6 +94,15 @@ export const actions = {
             state.focus = index;
         }
     },
+    addDay(files) {
+        let {daysData} = state;
+        const dayData = processFiles(files)
+        daysData.set(day, daysData)
+    },
+    applyFilesDay(files) {
+        const dayData = processFiles(files);
+        rawState.daysData.set(dayData.day, dayData)
+    }
 }
 
 
@@ -117,15 +117,33 @@ const state = proxy(rawState)
 derive(getters, {proxy: state})
 export default state
 
-function processDataOfDay(day) {
 
+
+function processFiles(files) {
+
+
+    let [tops, bottoms, watered] = [
+        `flowering_top`,
+        `flowering_bot`,
+        `watered`,
+    ].map(fileName => files[fileName])
+        .map(fileString => csvParser(fileString, {excludeHeader: true, removeFirstColumn: true}))
+
+    return processDayData(tops, bottoms, watered);
+}
+
+function processDataOfDay(day) {
     let [tops, bottoms, watered] = [
         `/public/data/${day} - flowering_top.csv`,
         `/public/data/${day} - flowering_bot.csv`,
         `/public/data/${day} - watered.csv`,
-    ]
-        .map(fileName => csvFiles[fileName])
+    ].map(fileName => csvFiles[fileName])
         .map(fileString => csvParser(fileString, {excludeHeader: true, removeFirstColumn: true}))
+
+    return processDayData(tops, bottoms, watered);
+}
+
+function processDayData( tops, bottoms, watered){
 
     let columns = tops[0].length;
     let rows = tops.length;
@@ -135,17 +153,16 @@ function processDataOfDay(day) {
 
     let datums = tops.map((_, index) => {
         return {
-            index:index,
+            index: index,
             densities: [+tops[index], +bottoms[index]],
-            top: +tops[index],
-            bottom: +bottoms[index],
+            // top: +tops[index],
+            // bottom: +bottoms[index],
             watered: +watered[index],
         }
     })
 
     return {day, datums, columns, rows}
 }
-
 
 
 // const getters2 = {

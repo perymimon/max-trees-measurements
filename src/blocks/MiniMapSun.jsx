@@ -7,7 +7,11 @@ export function MiniMapSun(){
     console.log('rendering miniMap')
     const snap = useSnapshot(proxyState);
 
-    return <Minimap items={snap.days} index={snap.dayIndex} onPageChange={actions.updateDay}/>
+    return <Minimap
+        items={snap.days}
+        index={snap.dayIndex}
+        onFilesDrop={actions.applyFilesDay}
+        onSelect={actions.updateDay}/>
 }
 
 export default MiniMapSun;

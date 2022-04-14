@@ -9,6 +9,7 @@ import Groves from "./blocks/Groves";
 import TableControl from "./blocks/TableControl";
 import Header from "./blocks/Header";
 import FocusControls from "./blocks/FocusControl";
+import MiniMapSun from "./blocks/MiniMapSun";
 
 function App() {
     console.log('rendering App')
@@ -17,6 +18,7 @@ function App() {
         <Suspense fallback={"Loading ..."}>
             <div className="App">
                 <Header/>
+                <MiniMapSun/>
                 <Canvas className="tree-field" frameloop="demand"
                         gl={{antialias: true}}
                         dpr={[1, 1.5]}

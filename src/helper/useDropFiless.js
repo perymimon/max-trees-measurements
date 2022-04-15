@@ -1,27 +1,14 @@
 import {useEffect, useRef, useState} from "react";
 
-function async(obj, eventName) {
-    return new Promise((res, rej) => {
-        obj.addEventListener(eventName, res);
-    });
-}
 
 async function dropRefHandler(e) {
     e.preventDefault()
     e.stopPropagation()
+    let filesReturn = {};
     let files = e.dataTransfer.files
-    let reader = new FileReader()
-    let filesReturn = []
 
     for (let file of files) {
-        reader.readAsText(file)
-        await async(reader, 'load')
-        filesReturn.push({
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data: reader.result
-        })
+        filesReturn[file.name] = file
     }
 
     return filesReturn
@@ -68,7 +55,12 @@ export function useDropFiless(ref, onFileDrop) {
         }
     }, [ref.current])
 
-    return [files,function clear(){
-      setFiles({})
+    return [files, function clear(deletingFiles) {
+        if (!files) return setFiles({}), false;
+        for(let f of deletingFiles){
+            delete files[f.name]
+        }
+        setFiles({...files})
+
     }]
 }

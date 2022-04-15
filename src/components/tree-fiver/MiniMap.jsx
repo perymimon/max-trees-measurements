@@ -6,17 +6,17 @@ import {useDropFiless} from "../../helper/useDropFiless";
 export const Minimap = memo(MinimapComponent)
 
 function MinimapComponent(props) {
-    const {items, index, onSelect = null, onFileDrop = null} = props;
+    const {items, index, onSelect = null, onFilesDrop = null} = props;
     const targetRef = useRef();
     const [files, clear] = useDropFiless(targetRef);
 
     let filesByDates = useMemo(_ => {
         let filesByDate = {};
-        let dateCheck = /\d\d-\d\d-\d\d/
+        let dateExclude = /\d\d-\d\d-\d\d/
         for (let fileName in files) {
-            let date = fileName.match(dateCheck)
+            let date = fileName.match(dateExclude)
             let group = filesByDate[date] = filesByDate[date] || {
-                date: date + '',
+                day: date + '',
                 files: [],
                 complete: false
             }
@@ -29,12 +29,10 @@ function MinimapComponent(props) {
     }, [files])
 
     function handleApplyFiles(group) {
-        let applyFiles = {}
-        for(let file of group.files){
-            let dateClean = /watered|flowering_bot|flowering_top/
-            applyFiles[file.name.match(dateClean)] = file.data
+        if(onFilesDrop?.(group)){
+            clear(group.files)
         }
-        onFileDrop?.(applyFiles)
+
     }
 
     return (
@@ -51,7 +49,7 @@ function MinimapComponent(props) {
             })}
             {Object.values(filesByDates).map(group => {
                 return (
-                    <div key={group.name}
+                    <div key={group.day}
                          className={`files-pending ${group.complete && "group-complete"}`}>
                         {
                             group.files.map(file => (

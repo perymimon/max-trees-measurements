@@ -44,13 +44,25 @@
 }
 
 .files-pending{
+    display:flex;
+    flex-direction: column;
     border:1px dashed currentColor;
     padding:0.2em;
-    margin:0.2em;
     text-align: left;
 }
 .files-pending.group-complete{
     color: rgba(155, 160, 167, 0.9);
+}
+
+.files-pending button {
+    align-self: flex-end;
+    justify-self: flex-end;
+    position: relative;
+    margin: 0.3em auto;
+    font-size: 1.2rem;
+    color: rgba(155, 160, 167, 0.9);
+    background-color: rgba(164, 126, 167, 0.9);
+    border-radius: 0.2em;
 }
 /*}.minimap .page{*/
 /*    !*left: `${i * wg}em`,*!*/

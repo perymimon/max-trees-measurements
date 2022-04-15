@@ -1,17 +1,32 @@
 import {csvParser} from "./helper/csvParsers";
 import {proxy, ref} from "valtio";
 import {derive} from 'valtio/utils'
+import {async} from "./helper/events";
 
-const csvFiles = import.meta.glob('/public/data/*.csv', {as: 'raw'});
+let csvFiles = import.meta.glob('/public/data/*.csv', {as: 'raw'});
 console.log('files', csvFiles);
-const rawState = {
-    days: ['2020-03-13', '2020-08-02'],
-    dayIndex: 0,
-    weight: 0,
-    daysData: ref(new Map()),
-    markers: [],
-    focus: null // index of tree
-}
+const checkDays = new Set(['2020-03-13', '2020-08-02']);
+const state = (function () {
+
+    const rawState = {
+        days: Array.from(checkDays),
+        dayIndex: 0,
+        weight: 0,
+        daysData: ref(new Map()),
+        markers: [],
+        focus: null // index of tree
+    }
+
+    // fill the state with daysdata
+    for (let day of rawState.days) {
+        const dayData = processDataOfDay(day);
+        rawState.daysData.set(day, dayData)
+    }
+    csvFiles = false; // (clean memory)
+
+
+    return proxy(rawState)
+})()
 
 const getters = {
     dayName(get) {
@@ -99,37 +114,43 @@ export const actions = {
         const dayData = processFiles(files)
         daysData.set(day, daysData)
     },
-    applyFilesDay(files) {
-        const dayData = processFiles(files);
-        rawState.daysData.set(dayData.day, dayData)
+    async applyFilesDay(group) {
+        if (!checkDays.has(group.day)) {
+            const dayData = await processFiles(group);
+            checkDays.add(dayData.day)
+            state.daysData.set(dayData.day, dayData)
+            state.days.push(dayData.day)
+        }
+        return true;
     }
 }
 
 
-// fill the state with daysdata
-for (let day of rawState.days) {
-    const dayData = processDataOfDay(day);
-    rawState.daysData.set(day, dayData)
-}
-const state = proxy(rawState)
+
 // const state = proxyWithComputed(rawState, getters2)
 // as derive define it run all getters and evaluate them
 derive(getters, {proxy: state})
 export default state
 
 
+async function processFiles(group) {
+    const reader = new FileReader();
+    let result = {};
 
-function processFiles(files) {
+    for (let file of group.files) {
+        let dateClassed = /watered|flowering_bot|flowering_top/
+        reader.readAsText(file)
+        await async(reader, 'load')
+        let type = file.name.match(dateClassed)
+        result[type] = csvParser(reader.result, {excludeHeader: true, removeFirstColumn: true});
+    }
 
-
-    let [tops, bottoms, watered] = [
-        `flowering_top`,
-        `flowering_bot`,
-        `watered`,
-    ].map(fileName => files[fileName])
-        .map(fileString => csvParser(fileString, {excludeHeader: true, removeFirstColumn: true}))
-
-    return processDayData(tops, bottoms, watered);
+    return processDayData(
+        group.day,
+        result.flowering_top,
+        result.flowering_bot,
+        result.watered
+    );
 }
 
 function processDataOfDay(day) {
@@ -140,10 +161,10 @@ function processDataOfDay(day) {
     ].map(fileName => csvFiles[fileName])
         .map(fileString => csvParser(fileString, {excludeHeader: true, removeFirstColumn: true}))
 
-    return processDayData(tops, bottoms, watered);
+    return processDayData(day, tops, bottoms, watered);
 }
 
-function processDayData( tops, bottoms, watered){
+function processDayData(day, tops, bottoms, watered) {
 
     let columns = tops[0].length;
     let rows = tops.length;

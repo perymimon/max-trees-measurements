@@ -42,7 +42,9 @@ function App() {
                     <TableControl/>
                 </div>
                 <footer>
-                    by <a href="https://github.com/perymimon">Pery Mimon</a>
+                    Infographic implementation by <a href="https://github.com/perymimon" target="_blank">Pery Mimon</a>
+                    &nbsp;
+                    for <a target="_blank" href="https://facebook.com/Ampple-Apple-Mapping-101508234895620/"> Ampple - Apple Mapping</a>
                 </footer>
             </div>
         </Suspense>
